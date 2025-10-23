@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EasyLearn • Quiz</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] }
+        }
+      }
+    }
+  </script>
+
+  <!-- MathJax for LaTeX (optional in questions) -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <style>
+    body{font-family:'Inter',sans-serif;background:#f7f9fb;}
+    .card{background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.06);}
+    .option-button{display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px;
+      border-radius:12px;border:1px solid #e5e7eb;background:#fff;transition:all .2s;cursor:pointer;font-size:1rem;}
+    .option-button:focus{outline:3px solid rgba(59,130,246,.35);outline-offset:1px;}
+    .option-button:hover:not([disabled]){background:#f3f4f6;border-color:#d1d5db;}
+    .correct-answer{background:#dcfce7 !important;border-color:#16a34a !important;font-weight:600;}
+    .incorrect-answer{background:#fee2e2 !important;border-color:#ef4444 !important;font-weight:600;}
+    .feedback-box{margin-top:12px;padding:12px;border-radius:12px;font-size:.95rem;}
+    @media (max-width: 480px){
+      .option-button{font-size:1.05rem;padding:16px}
+      .h1-title{font-size:1.35rem}
+    }
+  </style>
+</head>
+<body class="p-3 md:p-6">
+
+<!-- ===== BRAND (logo + name) ===== -->
+<div class="max-w-3xl mx-auto text-center mb-4 md:mb-6">
+  <img id="logo" src="assets/easylearn-logo.svg" alt="Logo"
+       class="mx-auto block mb-2 w-28 h-28 object-contain"
+       onerror="this.style.display='none'">
+  <div id="brand-text" class="text-black font-extrabold tracking-wide text-xl md:text-2xl">EASYLEARN</div>
+</div>
+
+<!-- ===== QUIZ HEADER (gradient blue reserved for institution/test) ===== -->
+<header class="max-w-3xl mx-auto card p-5 md:p-7 mb-3 md:mb-4 bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600 text-white">
+  <h1 id="university-name" class="text-2xl md:text-3xl font-extrabold text-center">University / Institution Name</h1>
+  <p id="test-title" class="text-center text-white/90 mt-1 md:mt-2 text-lg">Quiz Title</p>
+</header>
+
+<!-- ===== TIMER + START ROW ===== -->
+<section class="max-w-3xl mx-auto card p-3 md:p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <div class="text-gray-700">
+    <p class="font-semibold">Time left:</p>
+    <p>
+      <strong id="exam-time-left" class="tabular-nums">—:—:—</strong>
+      <span class="text-sm text-gray-500"> (Global = <span id="per-q">90s</span> × <span id="q-count-head">—</span>)</span>
+    </p>
+  </div>
+  <button id="start-btn" class="px-5 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition w-full sm:w-auto">
+    Start Quiz
+  </button>
+</section>
+
+<!-- ===== STATUS BAR ===== -->
+<div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+  <div class="card px-4 py-3 flex justify-between items-center">
+    <span class="font-semibold text-gray-600">Question</span>
+    <span class="font-bold text-gray-900"><span id="current-q-index">—</span> / <span id="total-q-count">—</span></span>
+  </div>
+  <div class="card px-4 py-3 flex justify-between items-center">
+    <span class="font-semibold text-gray-600">Score</span>
+    <span class="font-bold text-gray-900"><span id="score">0</span> / <span id="total-score">—</span></span>
+  </div>
+</div>
+
+<!-- ===== QUIZ BODY ===== -->
+<main class="max-w-3xl mx-auto" id="quiz-root">
+  <div id="quiz-content" class="opacity-60 pointer-events-none select-none">
+    <section class="card p-4 md:p-6">
+      <h2 class="text-lg md:text-xl font-semibold text-gray-800">Press “Start Quiz” to begin</h2>
+      <p class="text-gray-600 mt-2">The quiz will load from <code>config.json</code> and <code>questions.json</code>. Global time = 90s × number of questions by default.</p>
+    </section>
+  </div>
+
+  <!-- Controls -->
+  <div class="flex gap-3 mt-4">
+    <button id="prev-btn"
+            class="flex-1 px-4 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition disabled:opacity-50"
+            disabled>← Previous</button>
+    <button id="next-btn"
+            class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+            disabled>Next →</button>
+  </div>
+</main>
+
+<!-- ===== RESULTS MODAL ===== -->
+<div id="results-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl mx-auto">
+    <h2 class="text-2xl md:text-3xl font-bold mb-2 text-blue-700">Quiz Complete</h2>
+    <p class="text-gray-600 mb-4">Your final score</p>
+    <p id="final-score" class="text-4xl md:text-5xl font-extrabold text-green-600 mb-5 text-center">0 / 0</p>
+    <div class="space-y-1 text-sm text-gray-600 mb-5">
+      <p>Total Questions: <span id="modal-total"></span></p>
+      <p>Correct Answers: <span id="modal-correct"></span></p>
+      <p>Total Time Allowed: <span id="modal-time-allowed"></span></p>
+      <p>Time Used: <span id="modal-time-used"></span></p>
+    </div>
+    <div class="flex gap-3">
+      <button id="restart-btn" class="flex-1 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">Restart</button>
+      <button id="close-btn" class="flex-1 py-3 bg-gray-200 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="mt-6 md:mt-8 text-center text-xs text-gray-500">
+  © <span id="year"></span> EasyLearn • For educational use
+</footer>
+
+<!-- ================== SCRIPT ================== -->
+<script>
+const state = {
+  config: null,
+  questions: [],
+  started: false,
+  currentIndex: 0,
+  score: 0,
+  answered: [],
+  totalSeconds: 0,
+  secondsLeft: 0,
+  timerId: null,
+};
+function formatHMS(sec){ const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60; return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+const logoEl=document.getElementById('logo');
+const brandTextEl=document.getElementById('brand-text');
+const uniEl=document.getElementById('university-name');
+const titleEl=document.getElementById('test-title');
+const startBtn=document.getElementById('start-btn');
+const timeLeftEl=document.getElementById('exam-time-left');
+const perQEl=document.getElementById('per-q');
+const qCountHeadEl=document.getElementById('q-count-head');
+const quizContent=document.getElementById('quiz-content');
+const currentQ=document.getElementById('current-q-index');
+const totalQ=document.getElementById('total-q-count');
+const scoreEl=document.getElementById('score');
+const totalScoreEl=document.getElementById('total-score');
+const prevBtn=document.getElementById('prev-btn');
+const nextBtn=document.getElementById('next-btn');
+const resultsOverlay=document.getElementById('results-overlay');
+const finalScoreDisplay=document.getElementById('final-score');
+const modalTotal=document.getElementById('modal-total');
+const modalCorrect=document.getElementById('modal-correct');
+const modalTimeAllowed=document.getElementById('modal-time-allowed');
+const modalTimeUsed=document.getElementById('modal-time-used');
+const closeBtn=document.getElementById('close-btn');
+const restartBtn=document.getElementById('restart-btn');
+
+async function loadAll(){
+  try{
+    const cacheBust = `?v=${Date.now()}`;
+    const [cfgResp, qResp] = await Promise.all([
+      fetch('config.json'+cacheBust, {cache:'no-cache'}),
+      fetch('questions.json'+cacheBust, {cache:'no-cache'})
+    ]);
+    if(!cfgResp.ok) throw new Error('config.json not found');
+    if(!qResp.ok) throw new Error('questions.json not found');
+    const config = await cfgResp.json();
+    const questions = await qResp.json();
+
+    state.config = config;
+    logoEl.src = config.logoSrc || 'assets/easylearn-logo.svg';
+    brandTextEl.textContent = config.brandText ?? 'EASYLEARN';
+    uniEl.textContent = config.universityName ?? 'University / Institution Name';
+    titleEl.textContent = config.testTitle ?? 'Quiz Title';
+
+    let qs = Array.isArray(questions) ? questions : (questions.items || []);
+    if(config.shuffleQuestions) qs = shuffle(qs);
+    if(config.shuffleOptions) qs = qs.map(q=>({...q, options: shuffle(q.options)}));
+    state.questions = qs;
+    state.answered = new Array(qs.length).fill(null);
+
+    const perQ = Number(config.secondsPerQuestion ?? 90);
+    state.totalSeconds = perQ * qs.length;
+    state.secondsLeft = state.totalSeconds;
+    perQEl.textContent = perQ + 's';
+    qCountHeadEl.textContent = qs.length;
+    totalQ.textContent = qs.length;
+    totalScoreEl.textContent = qs.length;
+    timeLeftEl.textContent = formatHMS(state.secondsLeft);
+  }catch(e){
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', `<div class="max-w-3xl mx-auto mb-4"><div class="card p-4 border border-red-300 bg-red-50 text-red-700"><p class="font-bold">Error loading quiz files.</p><p class="text-sm mt-1">Ensure <code>config.json</code> and <code>questions.json</code> are in the same branch and folder as <code>index.html</code> on GitHub Pages.</p></div></div>`);
+  }
+}
+
+function updateTimerUI(){ timeLeftEl.textContent = formatHMS(Math.max(0, state.secondsLeft)); }
+function startTimer(){
+  updateTimerUI();
+  state.timerId = setInterval(()=>{
+    state.secondsLeft--; updateTimerUI();
+    if(state.secondsLeft<=0){ clearInterval(state.timerId); showResults(true); }
+  },1000);
+}
+
+function renderQuestion(){
+  if(state.currentIndex>=state.questions.length){ showResults(false); return; }
+  const q=state.questions[state.currentIndex];
+  const userIdx=state.answered[state.currentIndex];
+  const disabled = userIdx!==null;
+  const optionsHtml = q.options.map((op,i)=>{
+    let cls='option-button';
+    if(disabled){
+      if(op===q.answer) cls+=' correct-answer';
+      else if(q.options[userIdx]===op) cls+=' incorrect-answer';
+      else cls+=' bg-gray-50 text-gray-400 opacity-80';
+    }
+    return `<button class="${cls}" onclick="selectOption(this,${i})" ${disabled?'disabled':''}>
+      <span class="font-mono text-sm mr-3 text-blue-500">${String.fromCharCode(65+i)}</span>${op}
+    </button>`;
+  }).join('');
+  const feedbackHtml = disabled ? `<div class="feedback-box bg-gray-100 border-l-4 border-blue-500"><p class="font-bold text-lg mb-2 text-blue-700">Explanation:</p><p class="text-gray-700">${q.explanation??''}</p></div>`:'';
+  quizContent.innerHTML = `<section class="card p-4 md:p-6"><h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800">Q${state.currentIndex+1}: ${q.q}</h2><div id="options-container" class="space-y-2">${optionsHtml}</div><div id="feedback-container">${feedbackHtml}</div></section>`;
+  if(window.MathJax?.typesetPromise) MathJax.typesetPromise();
+  currentQ.textContent = state.currentIndex+1;
+  scoreEl.textContent = state.score;
+  prevBtn.disabled = state.currentIndex===0;
+  nextBtn.disabled = !disabled;
+  nextBtn.textContent = state.currentIndex===state.questions.length-1 ? 'Finish Quiz' : 'Next →';
+}
+window.selectOption=(btn,idx)=>{
+  if(!state.started) return;
+  if(state.answered[state.currentIndex]!==null) return;
+  const q=state.questions[state.currentIndex];
+  const optionsContainer=document.getElementById('options-container');
+  Array.from(optionsContainer.children).forEach(b=>b.disabled=true);
+  const selected=q.options[idx];
+  const isCorrect = selected===q.answer;
+  if(isCorrect){ btn.classList.add('correct-answer'); state.score++; }
+  else { btn.classList.add('incorrect-answer'); const ci=q.options.indexOf(q.answer); if(ci>-1) optionsContainer.children[ci].classList.add('correct-answer'); }
+  state.answered[state.currentIndex]=idx;
+  scoreEl.textContent=state.score;
+  document.getElementById('feedback-container').innerHTML = `<div class="feedback-box ${isCorrect?'bg-green-100 border border-green-300':'bg-red-100 border border-red-300'}"><p class="font-bold ${isCorrect?'text-green-700':'text-red-700'}">${isCorrect?'Correct!':'Incorrect.'}</p><p class="text-gray-700 mt-1">${q.explanation??''}</p></div>`;
+  nextBtn.disabled=false;
+};
+function nextQuestion(){ if(state.currentIndex<state.questions.length-1){ state.currentIndex++; renderQuestion(); } else { showResults(false); } }
+prevBtn.addEventListener('click', ()=>{ if(state.currentIndex>0){ state.currentIndex--; renderQuestion(); } });
+nextBtn.addEventListener('click', nextQuestion);
+
+startBtn.addEventListener('click', ()=>{
+  if(state.started) return;
+  state.started=true;
+  document.getElementById('quiz-content').classList.remove('opacity-60','pointer-events-none','select-none');
+  startBtn.disabled=true;
+  renderQuestion(); startTimer();
+});
+document.getElementById('close-btn').addEventListener('click', ()=>{ resultsOverlay.classList.add('hidden'); resultsOverlay.classList.remove('flex'); });
+document.getElementById('restart-btn').addEventListener('click', ()=>{ location.reload(); });
+
+function showResults(forcedByTime){
+  clearInterval(state.timerId);
+  finalScoreDisplay.textContent = `${state.score} / ${state.questions.length}`;
+  modalTotal.textContent = state.questions.length;
+  modalCorrect.textContent = state.score;
+  const perQ = Number(state.config?.secondsPerQuestion ?? 90);
+  modalTimeAllowed.textContent = `${perQ}s × ${state.questions.length} = ${formatHMS(perQ*state.questions.length)}`;
+  const used = (state.config?.secondsPerQuestion ?? 90)*state.questions.length - Math.max(0, state.secondsLeft);
+  modalTimeUsed.textContent = `${formatHMS(used)}${forcedByTime?' (time up)':''}`;
+  resultsOverlay.classList.remove('hidden'); resultsOverlay.classList.add('flex');
+}
+
+document.getElementById('year').textContent = new Date().getFullYear();
+loadAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+[
+  {
+    "q": "What is the primary purpose of meiosis in gametogenesis?",
+    "options": [
+      "To duplicate DNA for cell growth.",
+      "To generate 4n cells for fertilization.",
+      "To reduce the chromosome number from diploid (2n) to haploid (1n).",
+      "To repair damaged somatic cells."
+    ],
+    "answer": "To reduce the chromosome number from diploid (2n) to haploid (1n).",
+    "explanation": "Meiosis halves the chromosome number (46\u219223) so that fertilization restores the diploid count."
+  },
+  {
+    "q": "Meiosis I is specifically known as which type of cell division?",
+    "options": [
+      "Equational division",
+      "Reductional division",
+      "Somatic division",
+      "Proliferative division"
+    ],
+    "answer": "Reductional division",
+    "explanation": "Homologous chromosomes separate, reducing 2n\u21921n."
+  },
+  {
+    "q": "When does spermatogenesis typically begin?",
+    "options": [
+      "During the third trimester of fetal development.",
+      "At birth.",
+      "At puberty.",
+      "Upon hormonal signal from the mother."
+    ],
+    "answer": "At puberty.",
+    "explanation": "Initiated by the HPG axis (FSH, LH)."
+  },
+  {
+    "q": "Where does spermatogenesis primarily take place?",
+    "options": [
+      "Epididymis",
+      "Seminal vesicles",
+      "Seminiferous tubules",
+      "Prostate gland"
+    ],
+    "answer": "Seminiferous tubules",
+    "explanation": "The germinal epithelium in seminiferous tubules supports all spermatogenic stages."
+  },
+  {
+    "q": "The process of morphological change from a round spermatid to a motile spermatozoon is called:",
+    "options": [
+      "Spermatocytogenesis",
+      "Spermiogenesis",
+      "Meiosis II",
+      "Gametogenesis"
+    ],
+    "answer": "Spermiogenesis",
+    "explanation": "Acrosome formation, nuclear condensation, flagellum assembly."
+  },
+  {
+    "q": "Which cellular structure forms the Acrosome in a developing sperm cell?",
+    "options": [
+      "Mitochondria",
+      "Endoplasmic Reticulum",
+      "Nucleus",
+      "Golgi apparatus"
+    ],
+    "answer": "Golgi apparatus",
+    "explanation": "Golgi-derived vesicles cap the nucleus to form the acrosome."
+  },
+  {
+    "q": "How many functional gametes (sperm) are produced from one primary spermatocyte?",
+    "options": [
+      "One",
+      "Two",
+      "Four",
+      "Eight"
+    ],
+    "answer": "Four",
+    "explanation": "Meiosis I & II yield four haploid spermatids \u2192 sperm."
+  },
+  {
+    "q": "Oogenesis is unique because it begins:",
+    "options": [
+      "At puberty.",
+      "At menarche.",
+      "Pre-natally.",
+      "At the onset of LH surge."
+    ],
+    "answer": "Pre-natally.",
+    "explanation": "Oogonia transform to primary oocytes during fetal life."
+  },
+  {
+    "q": "Primary Oocytes arrest in which stage of meiosis for years until puberty?",
+    "options": [
+      "Metaphase II",
+      "Anaphase I",
+      "Prophase I",
+      "Telophase II"
+    ],
+    "answer": "Prophase I",
+    "explanation": "Specifically the diplotene stage."
+  },
+  {
+    "q": "The secondary oocyte is arrested in which stage when it is ovulated?",
+    "options": [
+      "Prophase I",
+      "Anaphase II",
+      "Metaphase II",
+      "Telophase I"
+    ],
+    "answer": "Metaphase II",
+    "explanation": "Completes meiosis II only if fertilized."
+  },
+  {
+    "q": "When does the secondary oocyte complete Meiosis II?",
+    "options": [
+      "Just prior to ovulation.",
+      "Only upon fertilization.",
+      "During the menstrual phase.",
+      "After forming the corpus luteum."
+    ],
+    "answer": "Only upon fertilization.",
+    "explanation": "Triggered by sperm penetration."
+  },
+  {
+    "q": "The primary purpose of unequal cytokinesis during oogenesis is to:",
+    "options": [
+      "Allow for the rapid formation of the placenta.",
+      "Reduce the total DNA content of the zygote.",
+      "Concentrate cytoplasm and nutrients into one large cell.",
+      "Ensure equal distribution of mitochondrial DNA."
+    ],
+    "answer": "Concentrate cytoplasm and nutrients into one large cell.",
+    "explanation": "Provides reserves for early cleavage before implantation."
+  },
+  {
+    "q": "How many functional ova are produced from one primary oocyte?",
+    "options": [
+      "Zero",
+      "One",
+      "Two",
+      "Four"
+    ],
+    "answer": "One",
+    "explanation": "Polar bodies receive minimal cytoplasm and do not develop."
+  },
+  {
+    "q": "What is a critical function of the Sertoli Cells in spermatogenesis?",
+    "options": [
+      "Producing testosterone.",
+      "Forming the Blood-Testis Barrier and providing nourishment.",
+      "Contracting to move sperm out of the tubules.",
+      "Initiating the LH surge."
+    ],
+    "answer": "Forming the Blood-Testis Barrier and providing nourishment.",
+    "explanation": "Tight junctions create an immune-privileged site; Sertoli cells also support metabolism."
+  },
+  {
+    "q": "The increased risk of Down Syndrome with advanced maternal age is primarily linked to the long duration of which meiotic event?",
+    "options": [
+      "Spermiogenesis",
+      "Second Meiotic Arrest (Metaphase II)",
+      "First Meiotic Arrest (Prophase I)",
+      "Mitotic division of oogonia"
+    ],
+    "answer": "First Meiotic Arrest (Prophase I)",
+    "explanation": "Cohesion loss during prolonged arrest increases nondisjunction."
+  }
+]
